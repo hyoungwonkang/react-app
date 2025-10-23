@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { postLogin } from '../api/memberApi';
 import { useDispatch } from 'react-redux';
-import { login } from '../slices/loginSlice';
+import { login, postLoginAsync } from '../slices/loginSlice';
 
 const initialState = {
     email: '',
@@ -22,19 +22,32 @@ function Login() {
     }
 
     const handleClick = (e) => {
-        postLogin(loginParam).then((data) => {
+        // postLogin(loginParam).then((data) => {
+        //     if (!data.error) {
+        //         console.log('data:', data);
+        //         dispatch(login(data));
+        //         setLoginParam({ ...loginParam });
+        //         navigate('/', { replace: true });
+        //     } else {
+        //         alert("아이디 비밀번호 정확히 입력하세요");
+        //         setLoginParam({ ...initialState });
+        //     }
+        // }).catch((error) => {
+        //     console.error('error:', error);
+        //     });
+
+        // 비동기 액션 생성자 함수 사용
+        dispatch(postLoginAsync(loginParam)).unwrap().then((data) => {
             if (!data.error) {
-                console.log('data:', data);
-                dispatch(login(loginParam));
-                setLoginParam({ ...loginParam });
                 navigate('/', { replace: true });
             } else {
                 alert("아이디 비밀번호 정확히 입력하세요");
                 setLoginParam({ ...initialState });
             }
-        }).catch((error) => {
+        })
+        .catch((error) => {
             console.error('error:', error);
-            });
+        });
     }
 
     return (
